@@ -8,3 +8,7 @@ def readJson(path, SAVE_DIRECTORY):
 			return json.load(jsonData)
 	else:
 		return None
+
+def writeJson(data, path, SAVE_DIRECTORY):
+	with open(f"{SAVE_DIRECTORY}/{path}", "w", encoding="utf-8") as jsonFile:
+		json.dump(data, jsonFile, ensure_ascii=False, indent=2)

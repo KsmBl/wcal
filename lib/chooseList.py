@@ -23,6 +23,6 @@ def chooseList(inputList):
 		elif key == "down":
 			selectEntry = min(len(inputList) - 1, selectEntry + 1)
 		elif key == "enter":
-			return selectEntry
+			return inputList[selectEntry]
 		elif key == "q":
 			return None
