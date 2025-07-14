@@ -35,7 +35,6 @@ def mainMenu():
 		elif position == 2:
 			sys.exit(0)
 
-
 SAVE_DIRECTORY = getConfig("highlightSaveDirectory")
 
 if not os.path.exists(SAVE_DIRECTORY):
