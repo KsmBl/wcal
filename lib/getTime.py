@@ -22,13 +22,13 @@ def getTime():
 
 		key = keyboardScanner()
 
-		if key == "left":
+		if key == "Key.left":
 			position = max(0, position - 1)
-		elif key == "right":
+		elif key == "Key.right":
 			position = min(1, position + 1)
-		elif key == "up":
+		elif key == "Key.up":
 			time[position] = min(_max[position], time[position] + 1)
-		elif key == "down":
+		elif key == "Key.down":
 			time[position] = max(0, time[position] - 1)
-		elif key == "enter":
+		elif key == "Key.enter":
 			return time[0], time[1]

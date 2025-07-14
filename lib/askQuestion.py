@@ -27,9 +27,9 @@ def askQuestion(question, options):
 
 		key = keyboardScanner()
 
-		if key == "up":
+		if key == "Key.up":
 			position = max(0, position - 1)
-		elif key == "down":
+		elif key == "Key.down":
 			position = min(len(options) - 1, position + 1)
-		elif key == "enter":
+		elif key == "Key.enter":
 			return position

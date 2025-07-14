@@ -13,9 +13,9 @@ def getString():
 
 		if key in availabeChars:
 			customString += key
-		elif key == "space":
+		elif key == "Key.space":
 			customString += " "
-		elif key == "enter":
+		elif key == "Key.enter":
 			return customString
 		else:
 			continue

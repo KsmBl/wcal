@@ -40,9 +40,9 @@ def getDate():
 			print("        ↓")
 
 		key = keyboardScanner()
-		if key == "enter":
+		if key == "Key.enter":
 			return day, month, year
-		elif key == "up":
+		elif key == "key.up":
 			if cursor == 0:
 				day += 1
 			elif cursor == 1:
@@ -50,7 +50,7 @@ def getDate():
 			elif cursor == 2:
 				year += 1
 
-		elif key == "down":
+		elif key == "Key.down":
 			if cursor == 0:
 				day -= 1
 			elif cursor == 1:
@@ -58,11 +58,11 @@ def getDate():
 			elif cursor == 2:
 				year -= 1
 
-		elif key == "right":
+		elif key == "Key.right":
 			cursor += 1
 			cursor = min(cursor, 2)
 
-		elif key =="left":
+		elif key =="Key.left":
 			cursor -= 1
 			cursor = max(cursor, 0)
 

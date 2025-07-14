@@ -1,4 +1,5 @@
 from keyboardScanner import keyboardScanner
+import time
 import os
 
 def chooseList(inputList):
@@ -18,11 +19,11 @@ def chooseList(inputList):
 
 		key = keyboardScanner()
 
-		if key == "up":
+		if key == "Key.up":
 			selectEntry = max(0, selectEntry -1)
-		elif key == "down":
+		elif key == "Key.down":
 			selectEntry = min(len(inputList) - 1, selectEntry + 1)
-		elif key == "enter":
+		elif key == "Key.enter":
 			return inputList[selectEntry]
 		elif key == "q":
 			return None

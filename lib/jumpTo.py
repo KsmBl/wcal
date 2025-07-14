@@ -38,6 +38,7 @@ def jumpToDate(day, month, year):
 			return jumpToDate(1, month + 1, year)
 
 	elif rt == "reloadDay":
+		# reaload calendar with new highlight days
 		return jumpToDate(day, month, year)
 
 	return rt

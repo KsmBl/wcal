@@ -16,24 +16,24 @@ def interactiveMonthViewer(day, month, year, highlightDays):
 		printMonth(monthStart, monthLength, highlightDays, cursorDay, calendar.month_name[month], year)
 		key = keyboardScanner()
 
-		if key == "left":
+		if key == "Key.left":
 			cursorDay -= 1
 
 			if cursorDay <= 0:
 				return "month - 1"
 
-		elif key == "right":
+		elif key == "Key.right":
 			cursorDay += 1
 			if cursorDay > monthLength:
 				return "month + 1"
 
-		elif key == "up":
+		elif key == "Key.up":
 			cursorDay = max(cursorDay - 7, 1)
 
-		elif key == "down":
+		elif key == "Key.down":
 			cursorDay = min(cursorDay + 7, monthLength)
 
-		elif key == "enter":
+		elif key == "Key.enter":
 			rt = editDayHighlights(cursorDay, month, year)
 			if rt == "reloadDay":
 				return rt
