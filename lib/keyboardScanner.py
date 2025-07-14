@@ -2,6 +2,8 @@ import termios
 import sys
 import tty
 
+import time
+
 translationTable = {
 	'\x1b[A' : "up",
 	'\x1b[B' : "down",
@@ -22,7 +24,7 @@ def keyboardScanner():
 				ch3 = sys.stdin.read(1)
 				return translationTable[f"{ch1}{ch2}{ch3}"]
 			else:
-				return 'ESC'
+				return None
 		else:
 			if ch1 in ('\r', '\n'):
 				return 'enter'
@@ -31,5 +33,3 @@ def keyboardScanner():
 	
 	finally:
 		termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-
-	time.sleep(1)
