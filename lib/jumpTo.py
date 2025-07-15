@@ -7,7 +7,7 @@ import calendar
 SAVE_DIRECTORY = "./savedData"
 
 def jumpToDate(day, month, year):
-	SAVE_DIRECTORY = getConfig("highlightSaveDirectory")
+	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	highlights = readJson(f"{year}/{month}.json", SAVE_DIRECTORY)
 	highlightDays = []
 

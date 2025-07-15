@@ -10,7 +10,7 @@ def editDayHighlights(day, month, year):
 	changedDayVisuality = 0
 
 	while True:
-		SAVE_DIRECTORY = getConfig("highlightSaveDirectory")
+		SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 		highlights = readJson(f"{year}/{month}.json", SAVE_DIRECTORY)
 		dayEntries = []
 

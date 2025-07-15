@@ -7,7 +7,10 @@ import os
 sys.dont_write_bytecode = True
 
 # import custom libs
-sys.path.append(os.path.abspath("./lib/"))
+scriptDir = os.path.dirname(os.path.realpath(__file__))
+libPath = os.path.join(scriptDir, 'lib')
+sys.path.append(libPath)
+
 from chooseList import chooseList
 from getDate import getDate
 from getConfig import *
