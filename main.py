@@ -9,8 +9,8 @@ sys.dont_write_bytecode = True
 # import custom libs
 sys.path.append(os.path.abspath("./lib/"))
 from chooseList import chooseList
-from getConfig import getConfig
 from getDate import getDate
+from getConfig import *
 from jumpTo import *
 
 def mainMenu():
@@ -35,7 +35,8 @@ def mainMenu():
 		elif position == 2:
 			sys.exit(0)
 
-SAVE_DIRECTORY = getConfig("highlightSaveDirectory")
+createConfigFile()
+SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 
 if not os.path.exists(SAVE_DIRECTORY):
 	os.makedirs(SAVE_DIRECTORY)
