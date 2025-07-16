@@ -4,7 +4,6 @@ from getString import getString
 from getConfig import getConfig
 from getTime import getTime
 from readWriteJson import *
-import time
 
 def editDayHighlights(day, month, year):
 	changedDayVisuality = 0

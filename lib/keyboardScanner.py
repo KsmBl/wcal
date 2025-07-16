@@ -2,8 +2,6 @@ import termios
 import sys
 import tty
 
-import time
-
 translationTable = {
 	'\x1b[A' : "up",
 	'\x1b[B' : "down",

@@ -1,5 +1,4 @@
 from keyboardScanner import keyboardScanner
-import time
 import os
 
 def askQuestion(question, options):
