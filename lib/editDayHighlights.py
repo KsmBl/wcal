@@ -11,7 +11,11 @@ def editDayHighlights(day, month, year):
 
 	while True:
 		SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
-		highlights = readJson(f"{year}/{month}.json", SAVE_DIRECTORY)
+		highlightPath = f"{year}/{month}.json"
+		if not os.path.isfile(os.path.join(SAVE_DIRECTORY, highlightPath)):
+			writeJson({}, highlightPath, SAVE_DIRECTORY)
+
+		highlights = readJson(highlightPath, SAVE_DIRECTORY)
 		dayEntries = []
 
 		if str(day) in highlights:
@@ -35,11 +39,11 @@ def editDayHighlights(day, month, year):
 
 				if remove == 1:
 					highlights[str(day)].pop(pickedEntry)
-					writeJson(highlights, f"{year}/{month}.json", SAVE_DIRECTORY)
+					writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 
 					if highlights[str(day)] == {}:
 						highlights.pop(str(day))
-						writeJson(highlights, f"{year}/{month}.json", SAVE_DIRECTORY)
+						writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 						return "reloadDay"
 			else:
 				# new Entry
@@ -47,7 +51,7 @@ def editDayHighlights(day, month, year):
 					_hour, _minute = getTime()
 					_name = getString()
 					highlights[str(day)][f"{_hour}:{_minute}"] = _name
-					writeJson(highlights, f"{year}/{month}.json", SAVE_DIRECTORY)
+					writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 				# return
 				elif pickedID == len(arrayDayEntries) - 1:
 					if changedDayVisuality == 0:
@@ -61,5 +65,5 @@ def editDayHighlights(day, month, year):
 			print(highlights)
 			highlights[str(day)] = {}
 			highlights[str(day)][f"{_hour}:{_minute}"] = _name
-			writeJson(highlights, f"{year}/{month}.json", SAVE_DIRECTORY)
+			writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 			changedDayVisuality = 1
