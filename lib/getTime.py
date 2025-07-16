@@ -13,7 +13,7 @@ def getTime():
 		elif position == 1:
 			print("   ↑")
 
-		print(f"{str(time[0]).rjust(2)}:{str(time[1]).rjust(2)}")
+		print(f"{time[0]:02}:{time[1]:02}")
 
 		if position == 0:
 			print(" ↓")
@@ -31,4 +31,4 @@ def getTime():
 		elif key == "down":
 			time[position] = max(0, time[position] - 1)
 		elif key == "enter":
-			return time[0], time[1]
+			return f'{time[0]:02}', f'{time[1]:02}'
