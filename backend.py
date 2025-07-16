@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from flask import Flask, request
+import json
+import os
 
 SYNC_LOCATION = "./syncedHighlights/"
 LOGIN_CODE = "420621"
@@ -10,9 +13,6 @@ PORT = "4200"
 ## post: new file
 ## post: update file
 
-from flask import Flask, request
-import json
-
 app = Flask(__name__)
 
 @app.route('/test', methods=['GET'])
@@ -23,6 +23,22 @@ def handle_get():
 def upload():
 	data = request.json
 	loginCode = data["loginCode"]
+
+	year = data["year"]
+	month = data["month"]
+	content = data["content"]
+
+	if loginCode == LOGIN_CODE:
+		yearDirectory = os.path.join(SYNC_LOCATION, year)
+		os.makedirs(yearDirectory, exist_ok=True)
+		file_path = os.path.join(yearDirectory, f"{month}.json")
+
+		with open(file_path, "w", encoding="utf-8") as f:
+			json.dump(content, f, ensure_ascii=False, indent=2)
+
+		return [0, "file synced"]
+	else:
+		return [1, "login code wrong"]
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=PORT)
