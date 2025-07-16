@@ -5,7 +5,7 @@ def createConfigFile():
 	# set data for default config file
 	path = os.path.expanduser("~/.config/wcal/")
 	filename = "config.ini"
-	content = "[configs]\nhighlightSaveDirectory = ~/.config/wcal/savedData\nsyncIP = 0.0.0.257\nsyncPort = 420\nsyncHighlights = True"
+	content = "[configs]\nhighlightSaveDirectory = ~/.config/wcal/savedData\nsyncIP = 0.0.0.257\nsyncPort = 4200\nloginCode = 420621\nsyncHighlights = True"
 	fullPath = os.path.join(path, filename)
 
 	# test if config file already exists
