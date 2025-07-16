@@ -24,8 +24,8 @@ def upload():
 	data = request.json
 	loginCode = data["loginCode"]
 
-	year = data["year"]
-	month = data["month"]
+	year = str(data["year"])
+	month = str(data["month"])
 	content = data["content"]
 
 	if loginCode == LOGIN_CODE:
