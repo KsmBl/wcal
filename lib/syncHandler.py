@@ -1,7 +1,14 @@
+from getConfig import getConfig
+import requests
+import json
+
+import time
+
 # for external use
 
 def syncFiles():
 	print("not written function")
+	getWholeChecksum()
 
 def deleteSync():
 	print("not written function")
@@ -11,7 +18,12 @@ def deleteSync():
 
 # checksum of whole directory
 def getWholeChecksum():
-	print("not written function")
+	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getWholeChecksum"
+	rt = requests.get(url = URL, params = {})
+	data = rt.json()
+
+	print(data)
+	time.sleep(5)
 
 # dict with all files with all individual checkums
 def getAllChecksums():
