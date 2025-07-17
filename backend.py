@@ -15,14 +15,23 @@ PORT = "4200"
 
 app = Flask(__name__)
 
-@app.route('/test', methods=['GET'])
+@app.route("/test", methods=["GET"])
 def handle_get():
-	return 'pog'
+	return "pog"
+
+@app.route("/getWholeChecksum", methods=["GET"])
+def getWholeChecksum():
+	print("TODO")
 
 @app.route("/upload", methods=["POST"])
 def upload():
 	data = request.json
 	loginCode = data["loginCode"]
+
+	if type(data["year"]) != int or type(data["month"]) != int:
+		print(type(data["year"]))
+		print(type(data["month"]))
+		return [2, "request parameter type not how expected"]
 
 	year = str(data["year"])
 	month = str(data["month"])
