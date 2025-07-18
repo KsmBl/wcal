@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, request
 import hashlib
+import glob
 import json
 import os
 
@@ -27,15 +28,25 @@ def getWholeChecksum():
 	for root, dirs, files in sorted(os.walk(SYNC_LOCATION)):
 		for fname in sorted(files):
 			fpath = os.path.join(root, fname)
-			rel_path = os.path.relpath(fpath, SYNC_LOCATION)
+			relPath = os.path.relpath(fpath, SYNC_LOCATION)
 
-			md5.update(rel_path.encode())
+			md5.update(relPath.encode())
 
-			md5.update(md5_for_file(fpath))
+			md5.update(md5ForFile(fpath, "b"))
 
 	hashval = md5.hexdigest()
 	print(hashval)
 	return {"hash":hashval}
+
+
+@app.route("/getAllChecksums", methods=["GET"])
+def getAllChecksums():
+	allChecksums = {}
+	for filename in glob.glob(f"{SYNC_LOCATION}/**/*.json", recursive=True):
+		allChecksums[filename.replace(SYNC_LOCATION, "")] = md5ForFile(filename, "x")
+
+	print(allChecksums)
+	return allChecksums
 
 
 @app.route("/upload", methods=["POST"])
@@ -55,9 +66,9 @@ def upload():
 	if loginCode == LOGIN_CODE:
 		yearDirectory = os.path.join(SYNC_LOCATION, year)
 		os.makedirs(yearDirectory, exist_ok=True)
-		file_path = os.path.join(yearDirectory, f"{month}.json")
+		filePath = os.path.join(yearDirectory, f"{month}.json")
 
-		with open(file_path, "w", encoding="utf-8") as f:
+		with open(filePath, "w", encoding="utf-8") as f:
 			json.dump(content, f, ensure_ascii=False, indent=2)
 
 		return [0, "file synced"]
@@ -65,12 +76,16 @@ def upload():
 		return [1, "login code wrong"]
 
 
-def md5_for_file(file_path):
+def md5ForFile(filePath, mode):
 	hasher = hashlib.md5()
-	with open(file_path, 'rb') as f:
+	with open(filePath, 'rb') as f:
 		for chunk in iter(lambda: f.read(4096), b''):
 			hasher.update(chunk)
-	return hasher.digest()
+
+	if mode == "x":
+		return hasher.hexdigest()
+	elif mode == "b":
+		return hasher.digest()
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=PORT)

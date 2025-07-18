@@ -7,7 +7,6 @@ import time
 # for external use
 
 def syncFiles():
-	print("not written function")
 	getWholeChecksum()
 
 def deleteSync():
