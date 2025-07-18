@@ -1,8 +1,11 @@
 from interactiveMonthViewer import interactiveMonthViewer
+from syncHandler import syncFiles
 from getConfig import getConfig
 from datetime import datetime
 from readWriteJson import *
 import calendar
+
+import time
 
 SAVE_DIRECTORY = "./savedData"
 
@@ -20,6 +23,11 @@ def jumpToDate(day, month, year):
 			highlightDays.append(int(i))
 
 	rt = interactiveMonthViewer(day, month, year, highlightDays)
+	if getConfig("syncHighlights") == "True":
+		rt2 = syncFiles()
+		if rt2[0] != 0:
+			print(rt2[1])
+			time.sleep(1)
 
 	if rt == "month - 1":
 		if month <= 1:

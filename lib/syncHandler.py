@@ -14,11 +14,21 @@ ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 # for external use
 # sync all files, noting else to care about
 def syncFiles():
+	# test if server is reachable
+	try:
+		getRequest("ping")
+		reachable = True
+
+	except:
+		reachable = False
+
+	if not reachable:
+		return [1, f"{REMOTE_URL} not reachable"]
+
+
 	# anything out of sync?
 	if getWholeChecksum() == getOwnWholeChecksum():
-		print("Everything is synced")
-		time.sleep(1)
-		return 0 # everything is fine
+		return [0, "everything synced"]
 
 	# something is out of sync
 	else:
@@ -33,15 +43,14 @@ def syncFiles():
 		syncDiff = [x for x in syncFiles if x not in localFiles]
 
 		if localDiff != []:
-			print("have to sync files")
 			for x in localDiff:
 				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
-				print(f"sync {x}")
 
 		if syncDiff != []:
 			print("have to download or delete remote files")
 			time.sleep(2)
 			# TODO
+			return [1, "not fully synced"]
 
 		# all files exists on both sides
 		if localDiff == [] and syncDiff == []:
@@ -55,7 +64,8 @@ def syncFiles():
 				# replace mismatched files
 				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
 				print(f"sync {x}")
-	time.sleep(5)
+
+	return [0, "everything synced"]
 
 # for interal use only
 # checksum of whole sync directory

@@ -11,6 +11,11 @@ PORT = "4200"
 
 app = Flask(__name__)
 
+# test if server is reachable
+@app.route("/ping", methods=["GET"])
+def ping():
+	return {"online":"online"}
+
 # return checksum of whole SYNC_LOCATION directory
 @app.route("/getWholeChecksum", methods=["GET"])
 def getWholeChecksum():

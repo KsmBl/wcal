@@ -10,6 +10,8 @@ scriptDir = os.path.dirname(os.path.realpath(__file__))
 libPath = os.path.join(scriptDir, 'lib')
 sys.path.append(libPath)
 
+from settingsMenu import settingsMenu
+from askQuestion import askQuestion
 from syncHandler import syncFiles
 from chooseList import chooseList
 from getDate import getDate
@@ -17,7 +19,7 @@ from getConfig import *
 from jumpTo import *
 
 def mainMenu():
-	menus = ["current Month", "jump to Date", "Exit", "test get request"]
+	menus = ["current Month", "jump to Date", "settings", "Exit", "sync files"]
 
 	while True:
 		position = 0
@@ -28,18 +30,25 @@ def mainMenu():
 
 		position = menus.index(listItem)
 
-		if position == 1:
+		if position == 0:
+			rt = jumpToCurrentMonth()
+
+		elif position == 1:
 			day, month, year = getDate()
 			rt = jumpToDate(day, month, year)
 
-		elif position == 0:
-			rt = jumpToCurrentMonth()
-
 		elif position == 2:
-			sys.exit(0)
+			settingsMenu()
 
 		elif position == 3:
-			syncFiles()
+			sys.exit(0)
+
+		elif position == 4:
+			rt = syncFiles()
+			if rt[0] == 0:
+				askQuestion("Files synced", ["OK"])
+			else:
+				askQuestion(rt[1], ["OK"])
 
 createConfigFile()
 SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
