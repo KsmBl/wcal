@@ -69,6 +69,7 @@ def upload():
 	month = str(data["month"])
 	content = data["content"]
 
+
 	if loginCode == LOGIN_CODE:
 		yearDirectory = os.path.join(SYNC_LOCATION, year)
 		os.makedirs(yearDirectory, exist_ok=True)

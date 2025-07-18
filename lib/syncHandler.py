@@ -1,3 +1,4 @@
+from readWriteJson import readJson
 from getConfig import getConfig
 import requests
 import hashlib
@@ -10,8 +11,13 @@ import time
 # for external use
 
 def syncFiles():
+	# anything out of sync?
 	if getWholeChecksum() == getOwnWholeChecksum():
+		print("Everything is synced")
+		time.sleep(1)
 		return 0 # everything is fine
+
+	# something is out of sync
 	else:
 		localFiles = getAllOwnFileNames()
 		syncFiles = getAllFileNames()
@@ -22,16 +28,25 @@ def syncFiles():
 		# synced files that are not local
 		syncDiff = [x for x in syncFiles if x not in localFiles]
 
-		print(localFiles)
-		print(syncFiles)
-		print(localDiff)
-		print(syncDiff)
-
 		if localDiff != []:
 			print("have to sync files")
+			for x in localDiff:
+				uploadFile(os.path.expanduser(os.path.join(getConfig("highlightSaveDirectory"), x)))
+				print(f"sync {x}")
 
 		if syncDiff != []:
 			print("have to download or delete remote files")
+			# TODO
+
+		if localDiff == [] and syncDiff == []:
+			remoteChecksums = getAllChecksums()
+			localCheckSums = getAllOwnChecksums()
+
+			mismatches = [key for key in remoteChecksums if remoteChecksums.get(key) != localCheckSums.get(key)]
+
+			print(mismatches)
+
+			# TODO: upload mismatching files
 
 	time.sleep(5)
 
@@ -71,6 +86,15 @@ def getAllChecksums():
 	data = rt.json()
 	return data
 
+
+def getAllOwnChecksums():
+	allChecksums = {}
+	syncLocation = os.path.expanduser(getConfig("highlightSaveDirectory"))
+	for filename in glob.glob(f"{syncLocation}/**/*.json", recursive=True):
+		allChecksums[filename.replace(f"{syncLocation}/", "")] = md5ForFile(filename, "x")
+
+	return allChecksums
+
 def getAllFileNames():
 	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getAllFileNames"
 	rt = requests.get(url = URL, params = {})
@@ -86,8 +110,27 @@ def getAllOwnFileNames():
 	return allFileNames
 
 # upload it and get a valid response
-def syncFile(path):
-	print("not written function")
+def uploadFile(path):
+	year, month = map(int, path.replace('.json', '').split("/")[-2:])
+
+	with open(path) as file:
+		data = json.load(file)
+
+	jsonRequest = {
+		"loginCode": getConfig("loginCode"),
+		"year": year,
+		"month": month,
+		"content": data
+	}
+
+	headers = {
+		"Content-Type": "application/json"
+	}
+	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/upload"
+	rt = requests.post(URL, headers=headers, json=jsonRequest)
+
+	data = rt.json()
+	return data[0]
 
 # download state from remote sync
 def downloadSync():
