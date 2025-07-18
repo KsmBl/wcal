@@ -11,6 +11,9 @@ def editDayHighlights(day, month, year):
 	while True:
 		SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 		highlightPath = f"{year}/{month}.json"
+		if not os.path.exists(os.path.join(SAVE_DIRECTORY, str(year))):
+			os.makedirs(os.path.join(SAVE_DIRECTORY, str(year)))
+
 		if not os.path.isfile(os.path.join(SAVE_DIRECTORY, highlightPath)):
 			writeJson({}, highlightPath, SAVE_DIRECTORY)
 
