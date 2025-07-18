@@ -44,9 +44,15 @@ def getAllChecksums():
 	allChecksums = {}
 	for filename in glob.glob(f"{SYNC_LOCATION}/**/*.json", recursive=True):
 		allChecksums[filename.replace(SYNC_LOCATION, "")] = md5ForFile(filename, "x")
-
-	print(allChecksums)
 	return allChecksums
+
+@app.route("/getAllFileNames", methods=["GET"])
+def getAllFileNames():
+	allFileNames = []
+	for filename in glob.glob(f"{SYNC_LOCATION}/**/*.json", recursive=True):
+		allFileNames.append(filename.replace(SYNC_LOCATION, ""))
+
+	return allFileNames
 
 
 @app.route("/upload", methods=["POST"])

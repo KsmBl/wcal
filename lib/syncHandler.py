@@ -2,6 +2,7 @@ from getConfig import getConfig
 import requests
 import hashlib
 import json
+import glob
 import os
 
 import time
@@ -9,8 +10,29 @@ import time
 # for external use
 
 def syncFiles():
-	print(getWholeChecksum())
-	print(getOwnWholeChecksum())
+	if getWholeChecksum() == getOwnWholeChecksum():
+		return 0 # everything is fine
+	else:
+		localFiles = getAllOwnFileNames()
+		syncFiles = getAllFileNames()
+
+		# local files that are not synced
+		localDiff = [x for x in localFiles if x not in syncFiles]
+
+		# synced files that are not local
+		syncDiff = [x for x in syncFiles if x not in localFiles]
+
+		print(localFiles)
+		print(syncFiles)
+		print(localDiff)
+		print(syncDiff)
+
+		if localDiff != []:
+			print("have to sync files")
+
+		if syncDiff != []:
+			print("have to download or delete remote files")
+
 	time.sleep(5)
 
 def deleteSync():
@@ -47,9 +69,21 @@ def getAllChecksums():
 	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getAllChecksums"
 	rt = requests.get(url = URL, params = {})
 	data = rt.json()
+	return data
 
-	print(data)
-	time.sleep(5)
+def getAllFileNames():
+	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getAllFileNames"
+	rt = requests.get(url = URL, params = {})
+	data = rt.json()
+	return data
+
+def getAllOwnFileNames():
+	allFileNames = []
+	storeLocation = os.path.expanduser(getConfig("highlightSaveDirectory"))
+	for filename in glob.glob(f"{storeLocation}/**/*.json", recursive=True):
+		allFileNames.append(filename.replace(f"{storeLocation}/", ""))
+
+	return allFileNames
 
 # upload it and get a valid response
 def syncFile(path):
