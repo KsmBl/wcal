@@ -9,6 +9,7 @@ translationTable = {
 	'\x1b[D' : "left"
 }
 
+# scans in stdin for pressed buttons
 def keyboardScanner():
 	fd = sys.stdin.fileno()
 	old_settings = termios.tcgetattr(fd)

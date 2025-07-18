@@ -6,6 +6,8 @@ import calendar
 
 SAVE_DIRECTORY = "./savedData"
 
+# jump to a specific date
+# arg: int, int, int
 def jumpToDate(day, month, year):
 	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	highlights = readJson(f"{year}/{month}.json", SAVE_DIRECTORY)
@@ -42,6 +44,7 @@ def jumpToDate(day, month, year):
 
 	return rt
 
+# use jumpToDate() to jump to the current month and day
 def jumpToCurrentMonth():
 	# get current Date
 	currentDay = datetime.now().day

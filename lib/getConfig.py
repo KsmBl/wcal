@@ -1,6 +1,7 @@
 import configparser
 import os
 
+# creates a default config file in ~/.config/wcal/
 def createConfigFile():
 	# set data for default config file
 	path = os.path.expanduser("~/.config/wcal/")
@@ -17,6 +18,8 @@ def createConfigFile():
 		with open(fullPath, 'w', encoding='utf-8') as file:
 			file.write(content)
 
+# get a config entry
+# arg: str
 def getConfig(configEntry):
 	config = configparser.ConfigParser()
 	config.read(os.path.expanduser("~/.config/wcal/config.ini"))

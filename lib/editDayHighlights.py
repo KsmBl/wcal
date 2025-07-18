@@ -5,6 +5,8 @@ from getConfig import getConfig
 from getTime import getTime
 from readWriteJson import *
 
+# creates an visual interface for editing highlighted days in a calender
+# arg: int, int, int
 def editDayHighlights(day, month, year):
 	changedDayVisuality = 0
 

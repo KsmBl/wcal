@@ -9,18 +9,9 @@ SYNC_LOCATION = "./syncedHighlights/"
 LOGIN_CODE = "420621"
 PORT = "4200"
 
-# run http server
-## get: array for synced files
-## get: md5 hash value for each synced file
-## post: new file
-## post: update file
-
 app = Flask(__name__)
 
-@app.route("/test", methods=["GET"])
-def handle_get():
-	return "pog"
-
+# return checksum of whole SYNC_LOCATION directory
 @app.route("/getWholeChecksum", methods=["GET"])
 def getWholeChecksum():
 	md5 = hashlib.md5()
@@ -38,7 +29,7 @@ def getWholeChecksum():
 
 	return {"hash":hashval}
 
-
+# return dict of all files with an md5 sum each
 @app.route("/getAllChecksums", methods=["GET"])
 def getAllChecksums():
 	allChecksums = {}
@@ -46,6 +37,7 @@ def getAllChecksums():
 		allChecksums[filename.replace(SYNC_LOCATION, "")] = md5ForFile(filename, "x")
 	return allChecksums
 
+# return array of all files / paths
 @app.route("/getAllFileNames", methods=["GET"])
 def getAllFileNames():
 	allFileNames = []
@@ -54,12 +46,12 @@ def getAllFileNames():
 
 	return allFileNames
 
-
+# upload a new file
 @app.route("/upload", methods=["POST"])
 def upload():
 	data = request.json
-	loginCode = data["loginCode"]
 
+	# test if given parameters are correct to prevent exploit with paths instead of ints
 	if type(data["year"]) != int or type(data["month"]) != int:
 		print(type(data["year"]))
 		print(type(data["month"]))
@@ -69,6 +61,8 @@ def upload():
 	month = str(data["month"])
 	content = data["content"]
 
+	# test if login code is correct
+	loginCode = data["loginCode"]
 
 	if loginCode == LOGIN_CODE:
 		yearDirectory = os.path.join(SYNC_LOCATION, year)
@@ -82,7 +76,8 @@ def upload():
 	else:
 		return [1, "login code wrong"]
 
-
+# create a md5 hashvalue from a file
+# arg: absolute path, "x" or "b" for hex or binary mode
 def md5ForFile(filePath, mode):
 	hasher = hashlib.md5()
 	with open(filePath, 'rb') as f:

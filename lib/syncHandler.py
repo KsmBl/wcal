@@ -8,8 +8,11 @@ import os
 
 import time
 
-# for external use
+REMOTE_URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}"
+ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 
+# for external use
+# sync all files, noting else to care about
 def syncFiles():
 	# anything out of sync?
 	if getWholeChecksum() == getOwnWholeChecksum():
@@ -19,6 +22,7 @@ def syncFiles():
 
 	# something is out of sync
 	else:
+		# compare filenames between remote and local
 		localFiles = getAllOwnFileNames()
 		syncFiles = getAllFileNames()
 
@@ -31,14 +35,17 @@ def syncFiles():
 		if localDiff != []:
 			print("have to sync files")
 			for x in localDiff:
-				uploadFile(os.path.expanduser(os.path.join(getConfig("highlightSaveDirectory"), x)))
+				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
 				print(f"sync {x}")
 
 		if syncDiff != []:
 			print("have to download or delete remote files")
+			time.sleep(2)
 			# TODO
 
+		# all files exists on both sides
 		if localDiff == [] and syncDiff == []:
+			# compare all file checksums
 			remoteChecksums = getAllChecksums()
 			localCheckSums = getAllOwnChecksums()
 
@@ -47,31 +54,21 @@ def syncFiles():
 			print(mismatches)
 
 			# TODO: upload mismatching files
-
 	time.sleep(5)
 
-def deleteSync():
-	print("not written function")
-
-
 # for interal use only
-
-# checksum of whole directory
+# checksum of whole sync directory
 def getWholeChecksum():
-	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getWholeChecksum"
-	rt = requests.get(url = URL, params = {})
-	data = rt.json()
+	return getRequest("getWholeChecksum")["hash"]
 
-	return data["hash"]
-
+# checksum of whole local directory
 def getOwnWholeChecksum():
 	md5 = hashlib.md5()
 
-	syncLocation = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	for root, dirs, files in sorted(os.walk(syncLocation)):
+	for root, dirs, files in sorted(os.walk(ABSOLUTE_SYNC_LOC)):
 		for fname in sorted(files):
 			fpath = os.path.join(root, fname)
-			relPath = os.path.relpath(fpath, syncLocation)
+			relPath = os.path.relpath(fpath, ABSOLUTE_SYNC_LOC)
 
 			md5.update(relPath.encode())
 			md5.update(md5ForFile(fpath, "b"))
@@ -79,38 +76,34 @@ def getOwnWholeChecksum():
 	hashval = md5.hexdigest()
 	return hashval
 
-# dict with all files with all individual checkums
+# get dict with all remote files with all individual checkums
 def getAllChecksums():
-	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getAllChecksums"
-	rt = requests.get(url = URL, params = {})
-	data = rt.json()
-	return data
+	return getRequest("getAllChecksums")
 
-
+# get dict with all local files with all individual checkums
 def getAllOwnChecksums():
 	allChecksums = {}
-	syncLocation = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	for filename in glob.glob(f"{syncLocation}/**/*.json", recursive=True):
-		allChecksums[filename.replace(f"{syncLocation}/", "")] = md5ForFile(filename, "x")
+	for filename in glob.glob(f"{ABSOLUTE_SYNC_LOC}/**/*.json", recursive=True):
+		allChecksums[filename.replace(f"{ABSOLUTE_SYNC_LOC}/", "")] = md5ForFile(filename, "x")
 
 	return allChecksums
 
+# get array of all remote files
 def getAllFileNames():
-	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/getAllFileNames"
-	rt = requests.get(url = URL, params = {})
-	data = rt.json()
-	return data
+	return getRequest("getAllFileNames")
 
+# get array of all local files
 def getAllOwnFileNames():
 	allFileNames = []
-	storeLocation = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	for filename in glob.glob(f"{storeLocation}/**/*.json", recursive=True):
-		allFileNames.append(filename.replace(f"{storeLocation}/", ""))
+	for filename in glob.glob(f"{ABSOLUTE_SYNC_LOC}/**/*.json", recursive=True):
+		allFileNames.append(filename.replace(f"{ABSOLUTE_SYNC_LOC}/", ""))
 
 	return allFileNames
 
-# upload it and get a valid response
+# upload a file
+## arg: absolute path
 def uploadFile(path):
+	# extract month and year from the path
 	year, month = map(int, path.replace('.json', '').split("/")[-2:])
 
 	with open(path) as file:
@@ -123,19 +116,14 @@ def uploadFile(path):
 		"content": data
 	}
 
-	headers = {
-		"Content-Type": "application/json"
-	}
-	URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}/upload"
-	rt = requests.post(URL, headers=headers, json=jsonRequest)
+	URL = f"{REMOTE_URL}/upload"
+	rt = requests.post(URL, headers={"Content-Type": "application/json"}, json=jsonRequest)
 
 	data = rt.json()
 	return data[0]
 
-# download state from remote sync
-def downloadSync():
-	print("not written function")
-
+# create an md5 hash value from a file
+## arg: absolute path, "x" or "b" for hex or binary mode
 def md5ForFile(filePath, mode):
 	hasher = hashlib.md5()
 	with open(filePath, 'rb') as f:
@@ -146,3 +134,11 @@ def md5ForFile(filePath, mode):
 		return hasher.hexdigest()
 	elif mode == "b":
 		return hasher.digest()
+
+# create a get request
+# arg: backend path
+def getRequest(path):
+	URL = f"{REMOTE_URL}/{path}"
+	rt = requests.get(url = URL, params = {})
+	data = rt.json()
+	return data

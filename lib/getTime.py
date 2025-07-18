@@ -1,6 +1,7 @@
 from keyboardScanner import keyboardScanner
 import os
 
+# visual interface that asks for a question and returns hour, minute
 def getTime():
 	time = [12, 0]
 	_max = [23, 59]

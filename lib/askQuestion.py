@@ -1,6 +1,8 @@
 from keyboardScanner import keyboardScanner
 import os
 
+# create visual interface with mutlible options to pick
+# arg: str, str[]
 def askQuestion(question, options):
 	position = 0
 
