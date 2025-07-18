@@ -1,6 +1,6 @@
 import os
 
 # returns a string
-def getString():
+def getString(question = ""):
 	os.system("clear")
-	return(input())
+	return(input(question))
