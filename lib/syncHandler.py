@@ -51,9 +51,10 @@ def syncFiles():
 
 			mismatches = [key for key in remoteChecksums if remoteChecksums.get(key) != localCheckSums.get(key)]
 
-			print(mismatches)
-
-			# TODO: upload mismatching files
+			for x in mismatches:
+				# replace mismatched files
+				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
+				print(f"sync {x}")
 	time.sleep(5)
 
 # for interal use only
