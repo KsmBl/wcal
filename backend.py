@@ -35,7 +35,7 @@ def getWholeChecksum():
 			md5.update(md5ForFile(fpath, "b"))
 
 	hashval = md5.hexdigest()
-	print(hashval)
+
 	return {"hash":hashval}
 
 
