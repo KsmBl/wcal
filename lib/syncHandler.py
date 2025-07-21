@@ -1,3 +1,4 @@
+from askQuestion import askQuestion
 from readWriteJson import readJson
 from getConfig import getConfig
 import requests
@@ -8,15 +9,17 @@ import os
 
 import time
 
-REMOTE_URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}"
+REMOTE_URL = ""
 ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 
 # for external use
 # sync all files, noting else to care about
 def syncFiles():
+	global REMOTE_URL
+	REMOTE_URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}"
 	# test if server is reachable
 	try:
-		getRequest("ping")
+		rt = getRequest("ping")
 		reachable = True
 
 	except:
@@ -44,7 +47,10 @@ def syncFiles():
 
 		if localDiff != []:
 			for x in localDiff:
-				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
+				rt = uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
+				if rt[0] != 0:
+					askQuestion(rt[1], ["OK"])
+					return [1, "not synced"]
 
 		if syncDiff != []:
 			print("have to download or delete remote files")
@@ -62,8 +68,10 @@ def syncFiles():
 
 			for x in mismatches:
 				# replace mismatched files
-				uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
-				print(f"sync {x}")
+				rt = uploadFile(os.path.join(ABSOLUTE_SYNC_LOC, x))
+				if rt[0] != 0:
+					askQuestion(rt[1], ["OK"])
+					return [1, "not synced"]
 
 	return [0, "everything synced"]
 
@@ -131,7 +139,7 @@ def uploadFile(path):
 	rt = requests.post(URL, headers={"Content-Type": "application/json"}, json=jsonRequest)
 
 	data = rt.json()
-	return data[0]
+	return data
 
 # create an md5 hash value from a file
 ## arg: absolute path, "x" or "b" for hex or binary mode
