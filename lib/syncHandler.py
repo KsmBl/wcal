@@ -158,6 +158,6 @@ def md5ForFile(filePath, mode):
 # arg: backend path
 def getRequest(path):
 	URL = f"{REMOTE_URL}/{path}"
-	rt = requests.get(url = URL, params = {})
+	rt = requests.get(url = URL, params = {}, timeout = 1)
 	data = rt.json()
 	return data
