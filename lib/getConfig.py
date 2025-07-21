@@ -1,10 +1,12 @@
 import configparser
 import os
 
+CONFIG_LOCATION = "~/.config/wcal/"
+
 # creates a default config file in ~/.config/wcal/
 def createConfigFile():
 	# set data for default config file
-	path = os.path.expanduser("~/.config/wcal/")
+	path = os.path.expanduser(CONFIG_LOCATION)
 	filename = "config.ini"
 	content = "[configs]\nhighlightSaveDirectory = ~/.config/wcal/savedData\nsyncIP = 0.0.0.257\nsyncPort = 4200\nloginCode = 420621\nsyncHighlights = True"
 	fullPath = os.path.join(path, filename)
@@ -22,6 +24,19 @@ def createConfigFile():
 # arg: str
 def getConfig(configEntry):
 	config = configparser.ConfigParser()
-	config.read(os.path.expanduser("~/.config/wcal/config.ini"))
+	config.read(os.path.expanduser(f"{CONFIG_LOCATION}config.ini"))
 
 	return config["configs"][configEntry]
+
+def setConfig(configEntry, value):
+	config = configparser.ConfigParser()
+
+	config.read(os.path.expanduser(f"{CONFIG_LOCATION}config.ini"))
+
+	if "configs" not in config.sections():
+		config.add_section("configs")
+
+	config.set("configs", configEntry, value)
+
+	with open(os.path.expanduser(f"{CONFIG_LOCATION}config.ini"), 'w') as configfile:
+		config.write(configfile)

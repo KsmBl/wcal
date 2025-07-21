@@ -1,3 +1,4 @@
+from getConfig import getConfig, setConfig
 from askQuestion import askQuestion
 from chooseList import chooseList
 from getString import getString
@@ -6,22 +7,34 @@ import re
 
 def settingsMenu():
 	while True:
-		rt = chooseList(["sync Highlights", "syncIP", "syncPort", "loginCode", "return"])
-		print(rt)
+		allSettings = [
+			f"sync Highlights - {getConfig('syncHighlights')}",
+			f"syncIP - {getConfig('syncIP')}",
+			f"syncPort - {getConfig('syncPort')}",
+			f"loginCode - {getConfig('loginCode')}",
+			f"return"
+		]
 
-		if rt == "sync Highlights":
-			askQuestion("sync Highlights to remote Server?", ["Yes", "No"])
-			# TODO: change setting
-		elif rt == "syncIP":
-			enterIP()
-			# TODO: save new IP
-		elif rt == "syncPort":
-			rt2 = enterPort()
-			# TODO: save new Port
-		elif rt == "loginCode":
-			rt2 = getString("Enter new login code")
-			# TODO: save new login code
-		elif rt == "return":
+		rt = chooseList(allSettings)
+
+		if rt == None:
+			return
+
+		position = allSettings.index(rt)
+
+		if position == 0:
+			rt = askQuestion("sync Highlights to remote Server?", ["Yes", "No"])
+			setConfig("syncHighlights", str([True, False][rt]))
+		elif position == 1:
+			rt = enterIP()
+			setConfig("syncIP", rt)
+		elif position == 2:
+			rt = enterPort()
+			setConfig("syncPort", rt)
+		elif position == 3:
+			rt = getString("Enter new login code\n")
+			setConfig("loginCode", rt)
+		elif position == 4:
 			return
 
 def enterIP(message = ""):
