@@ -10,12 +10,12 @@ scriptDir = os.path.dirname(os.path.realpath(__file__))
 libPath = os.path.join(scriptDir, 'lib')
 sys.path.append(libPath)
 
+from getConfig import getConfig, createConfigFile
 from settingsMenu import settingsMenu
 from askQuestion import askQuestion
 from syncHandler import syncFiles
 from chooseList import chooseList
 from getDate import getDate
-from getConfig import *
 from jumpTo import *
 
 def mainMenu():
