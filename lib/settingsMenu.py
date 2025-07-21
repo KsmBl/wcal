@@ -34,7 +34,7 @@ def settingsMenu():
 		elif position == 3:
 			rt = getString("Enter new login code\n")
 			setConfig("loginCode", rt)
-		elif position == 4:
+		elif rt == "return":
 			return
 
 def enterIP(message = ""):
