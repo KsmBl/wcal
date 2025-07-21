@@ -8,10 +8,10 @@ import re
 def settingsMenu():
 	while True:
 		allSettings = [
-			f"sync Highlights - {getConfig('syncHighlights')}",
-			f"syncIP - {getConfig('syncIP')}",
-			f"syncPort - {getConfig('syncPort')}",
-			f"loginCode - {getConfig('loginCode')}",
+			f"sync Highlights	- {getConfig('syncHighlights')}",
+			f"syncIP		- {getConfig('syncIP')}",
+			f"syncPort		- {getConfig('syncPort')}",
+			f"loginCode		- {getConfig('loginCode')}",
 			f"return"
 		]
 
