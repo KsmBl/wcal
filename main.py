@@ -18,8 +18,12 @@ from chooseList import chooseList
 from getDate import getDate
 from jumpTo import *
 
+
+from getColor import getColor
+
+
 def mainMenu():
-	menus = ["current Month", "jump to Date", "settings", "Exit", "sync files"]
+	menus = ["current Month", "jump to Date", "settings", "Exit", "sync files", "getColor"]
 
 	while True:
 		position = 0
@@ -49,6 +53,9 @@ def mainMenu():
 				askQuestion("Files synced", ["OK"])
 			else:
 				askQuestion(rt[1], ["OK"])
+
+		elif position == 5:
+			getColor()
 
 createConfigFile()
 SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))

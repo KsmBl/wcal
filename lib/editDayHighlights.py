@@ -5,6 +5,8 @@ from getConfig import getConfig
 from getTime import getTime
 from readWriteJson import *
 
+import time
+
 # creates an visual interface for editing highlighted days in a calender
 # arg: int, int, int
 def editDayHighlights(day, month, year):
@@ -24,7 +26,8 @@ def editDayHighlights(day, month, year):
 
 		if str(day) in highlights:
 			dayEntries = highlights[str(day)]
-			arrayDayEntries = [f"{t} | {msg}" for t, msg in sorted(dayEntries.items())]
+			arrayDayEntries = [f"{time} | {info['name']}" for time, info in dayEntries.items()]
+
 			arrayDayEntries.append("new Entry +")
 			arrayDayEntries.append("return")
 
@@ -54,7 +57,12 @@ def editDayHighlights(day, month, year):
 				if pickedID == len(arrayDayEntries) - 2:
 					_hour, _minute = getTime()
 					_name = getString()
-					highlights[str(day)][f"{_hour}:{_minute}"] = _name
+
+					highlights[str(day)].setdefault(f"{_hour}:{_minute}", {})
+
+					highlights[str(day)][f"{_hour}:{_minute}"]["name"] = _name
+					highlights[str(day)][f"{_hour}:{_minute}"]["color"] = 0
+
 					writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 				# return
 				elif pickedID == len(arrayDayEntries) - 1:
@@ -66,8 +74,12 @@ def editDayHighlights(day, month, year):
 		else:
 			_hour, _minute = getTime()
 			_name = getString()
-			print(highlights)
-			highlights[str(day)] = {}
-			highlights[str(day)][f"{_hour}:{_minute}"] = _name
+			highlights[str(day)] = {
+				f"{_hour}:{_minute}" : {
+					"name" : _name,
+					"color" : 0
+				}
+			}
+
 			writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 			changedDayVisuality = 1
