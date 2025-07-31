@@ -38,13 +38,18 @@ def settingsMenu():
 			return
 
 def enterIP(message = ""):
-	ip = getString(message + "Enter remote Server Ip\n")
+	ip = getString(message + "Enter remote Server Ip or Domain\n")
 	ipv4Regex = "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+	domainRegex = "^(?=.{1,253}$)(?!\-)([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$"
+
 	if re.match(ipv4Regex, ip):
-		print("good IP")
+		return ip
+	elif re.match(domainRegex, ip):
+		return ip
+	elif ip == "localhost":
 		return ip
 	else:
-		return enterIP("thats not an IP. ")
+		return enterIP("thats not a valide IP or a Domain. ")
 
 def enterPort(message = ""):
 	Port = getString(message + "Enter remote Server Port\n")
