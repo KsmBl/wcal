@@ -1,6 +1,8 @@
 from getColor import getColor, allColors
+from deleteEntry import deleteEntry
 from askQuestion import askQuestion
 from chooseList import chooseList
+from editEntry import editEntry
 from getString import getString
 from getConfig import getConfig
 from getTime import getTime
@@ -44,17 +46,17 @@ def editDayHighlights(day, month, year):
 			pickedEntry = pickedEntry.split(" ")[0]
 
 			if pickedID <= len(arrayDayEntries) - 3:
-				remove = askQuestion("remove this Entry?", ["no", "yes"])
+				edit = askQuestion("edit this Entry:", ["edit", "delete", "return"])
+				_pickedEntry = re.sub(r'\x1b\[[0-9;]*m', '', pickedEntry)
 
-				if remove == 1:
-					_pickedEntry = re.sub(r'\x1b\[[0-9;]*m', '', pickedEntry)
-					highlights[str(day)].pop(str(_pickedEntry))
-					writeJson(highlights, highlightPath)
-
-					if highlights[str(day)] == {}:
-						highlights.pop(str(day))
-						writeJson(highlights, highlightPath)
-						return "reloadDay"
+				if edit == 0:
+					editEntry(_pickedEntry, highlights, day, highlightPath)
+				elif edit == 1:
+					rt = askQuestion("delete entry?", ["no", "yes"])
+					if rt == 1:
+						rt2 = deleteEntry(_pickedEntry, highlights, day, highlightPath)
+						if rt2 == "reloadDay":
+							return "reloadDay"
 			else:
 				# new Entry
 				if pickedID == len(arrayDayEntries) - 2:
