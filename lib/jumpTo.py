@@ -13,7 +13,7 @@ SAVE_DIRECTORY = "./savedData"
 # arg: int, int, int
 def jumpToDate(day, month, year):
 	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	highlights = readJson(f"{year}/{month}.json", SAVE_DIRECTORY)
+	highlights = readJson(f"{year}/{month}.json")
 	highlightDays = []
 
 	if highlights == None:
