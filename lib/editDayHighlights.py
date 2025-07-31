@@ -1,9 +1,11 @@
+from getColor import getColor, allColors
 from askQuestion import askQuestion
 from chooseList import chooseList
 from getString import getString
 from getConfig import getConfig
 from getTime import getTime
 from readWriteJson import *
+import re
 
 import time
 
@@ -26,7 +28,7 @@ def editDayHighlights(day, month, year):
 
 		if str(day) in highlights:
 			dayEntries = highlights[str(day)]
-			arrayDayEntries = [f"{time} | {info['name']}" for time, info in dayEntries.items()]
+			arrayDayEntries = [f"{allColors()[info['color']]}{time} | {info['name']}{allColors()[0]}" for time, info in dayEntries.items()]
 
 			arrayDayEntries.append("new Entry +")
 			arrayDayEntries.append("return")
@@ -45,7 +47,8 @@ def editDayHighlights(day, month, year):
 				remove = askQuestion("remove this Entry?", ["no", "yes"])
 
 				if remove == 1:
-					highlights[str(day)].pop(pickedEntry)
+					_pickedEntry = re.sub(r'\x1b\[[0-9;]*m', '', pickedEntry)
+					highlights[str(day)].pop(str(_pickedEntry))
 					writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 
 					if highlights[str(day)] == {}:
@@ -57,11 +60,12 @@ def editDayHighlights(day, month, year):
 				if pickedID == len(arrayDayEntries) - 2:
 					_hour, _minute = getTime()
 					_name = getString()
+					_color = getColor()
 
 					highlights[str(day)].setdefault(f"{_hour}:{_minute}", {})
 
 					highlights[str(day)][f"{_hour}:{_minute}"]["name"] = _name
-					highlights[str(day)][f"{_hour}:{_minute}"]["color"] = 0
+					highlights[str(day)][f"{_hour}:{_minute}"]["color"] = _color
 
 					writeJson(highlights, highlightPath, SAVE_DIRECTORY)
 				# return
@@ -74,10 +78,11 @@ def editDayHighlights(day, month, year):
 		else:
 			_hour, _minute = getTime()
 			_name = getString()
+			_color = getColor()
 			highlights[str(day)] = {
 				f"{_hour}:{_minute}" : {
 					"name" : _name,
-					"color" : 0
+					"color" : _color
 				}
 			}
 

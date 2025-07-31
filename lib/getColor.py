@@ -11,6 +11,9 @@ colors = [
 	'\033[43m',	# yellow
 	'\033[41m']	# red
 
+def allColors():
+	return colors
+
 def getColor():
 	colorID = 0
 	
