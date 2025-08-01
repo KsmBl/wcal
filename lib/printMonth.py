@@ -1,9 +1,12 @@
+from getColor import allColors
 import math
 
 # print month with cursor and highlights and headers
-def printMonth(startDay, monthLength, highlight, cursor, header1, header2):
+def printMonth(startDay, monthLength, highlight, cursor, header1, header2, coloredDays):
 	# calculate amount of weeks
 	weekCount = math.ceil((startDay + monthLength) / 7)
+
+	print(coloredDays)
 
 	weeks = []
 	currentDay = 0
@@ -33,12 +36,17 @@ def printMonth(startDay, monthLength, highlight, cursor, header1, header2):
 	for week in weeks:
 		line = ""
 		for day in week:
+			_day = str(day)
+
+			if _day in coloredDays:
+				_day = f"{allColors()[coloredDays[_day]]}{_day}{allColors()[0]}"
+
 			if day == cursor and day in highlight:
-				line += ("{" + str(day) + "}").rjust(4)
+				line += ("{" + _day + "}").rjust(4)
 			elif day == cursor:
-				line += ("(" + str(day) + ")").rjust(4)
+				line += ("(" + _day + ")").rjust(4)
 			elif day in highlight:
-				line += ("[" + str(day) + "]").rjust(4)
+				line += ("[" + _day + "]").rjust(4)
 			else:
 				line += str(day).rjust(3) + " "
 
