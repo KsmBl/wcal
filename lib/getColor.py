@@ -36,7 +36,5 @@ def getColor():
 			colorID = max(colorID - 1, 0)
 		elif key == "right":
 			colorID = min(colorID + 1, len(colors) - 1)
-		elif key == "q":
-			sys.exit(0)
 		elif key == "enter":
 			return colorID
