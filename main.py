@@ -16,6 +16,7 @@ from syncHandler import syncFiles
 from chooseList import chooseList
 from getDate import getDate
 from jumpTo import *
+from log import log
 
 def mainMenu():
 	menus = ["current Month", "jump to Date", "settings", "Exit", "sync files"]
@@ -53,6 +54,7 @@ createConfigFile()
 SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 
 if not os.path.exists(SAVE_DIRECTORY):
+	log(0, "create save directory")
 	os.makedirs(SAVE_DIRECTORY)
 
 mainMenu()

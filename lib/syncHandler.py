@@ -1,6 +1,7 @@
 from askQuestion import askQuestion
 from readWriteJson import readJson
 from getConfig import getConfig
+from log import log
 import requests
 import hashlib
 import json
@@ -10,11 +11,11 @@ import os
 import time
 
 REMOTE_URL = ""
-ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 
 # for external use
 # sync all files, noting else to care about
 def syncFiles():
+	ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	global REMOTE_URL
 	REMOTE_URL = f"http://{getConfig('syncIP')}:{getConfig('syncPort')}"
 	# test if server is reachable
@@ -26,11 +27,13 @@ def syncFiles():
 		reachable = False
 
 	if not reachable:
+		log(1, f"remote Server '{REMOTE_URL}' not reachable")
 		return [1, f"{REMOTE_URL} not reachable"]
 
 
 	# anything out of sync?
 	if getWholeChecksum() == getOwnWholeChecksum():
+		log(0, "everything synced")
 		return [0, "everything synced"]
 
 	# something is out of sync
@@ -73,6 +76,7 @@ def syncFiles():
 					askQuestion(rt[1], ["OK"])
 					return [1, "not synced"]
 
+	log(0, "everything synced")
 	return [0, "everything synced"]
 
 # for interal use only
@@ -82,6 +86,7 @@ def getWholeChecksum():
 
 # checksum of whole local directory
 def getOwnWholeChecksum():
+	ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	md5 = hashlib.md5()
 
 	for root, dirs, files in sorted(os.walk(ABSOLUTE_SYNC_LOC)):
@@ -101,6 +106,7 @@ def getAllChecksums():
 
 # get dict with all local files with all individual checkums
 def getAllOwnChecksums():
+	ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	allChecksums = {}
 	for filename in glob.glob(f"{ABSOLUTE_SYNC_LOC}/**/*.json", recursive=True):
 		allChecksums[filename.replace(f"{ABSOLUTE_SYNC_LOC}/", "")] = md5ForFile(filename, "x")
@@ -113,6 +119,7 @@ def getAllFileNames():
 
 # get array of all local files
 def getAllOwnFileNames():
+	ABSOLUTE_SYNC_LOC = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	allFileNames = []
 	for filename in glob.glob(f"{ABSOLUTE_SYNC_LOC}/**/*.json", recursive=True):
 		allFileNames.append(filename.replace(f"{ABSOLUTE_SYNC_LOC}/", ""))
@@ -139,6 +146,10 @@ def uploadFile(path):
 	rt = requests.post(URL, headers={"Content-Type": "application/json"}, json=jsonRequest)
 
 	data = rt.json()
+
+	if data[0] == 0:
+		log(0, f"'{path}' synced")
+
 	return data
 
 # create an md5 hash value from a file
