@@ -14,6 +14,7 @@ colors = [
 def allColors():
 	return colors
 
+# ascii interface for choosing a color
 def getColor():
 	colorID = 0
 	

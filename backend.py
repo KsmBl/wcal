@@ -70,6 +70,7 @@ def upload():
 	loginCode = data["loginCode"]
 
 	if loginCode == LOGIN_CODE:
+		# save content
 		yearDirectory = os.path.join(SYNC_LOCATION, year)
 		os.makedirs(yearDirectory, exist_ok=True)
 		filePath = os.path.join(yearDirectory, f"{month}.json")

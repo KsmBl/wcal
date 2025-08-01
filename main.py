@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from datetime import datetime
 import sys
 import os
 
@@ -17,10 +16,6 @@ from syncHandler import syncFiles
 from chooseList import chooseList
 from getDate import getDate
 from jumpTo import *
-
-
-from getColor import getColor
-
 
 def mainMenu():
 	menus = ["current Month", "jump to Date", "settings", "Exit", "sync files"]

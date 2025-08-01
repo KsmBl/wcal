@@ -6,8 +6,6 @@ def printMonth(startDay, monthLength, highlight, cursor, header1, header2, color
 	# calculate amount of weeks
 	weekCount = math.ceil((startDay + monthLength) / 7)
 
-	print(coloredDays)
-
 	weeks = []
 	currentDay = 0
 	allDays = []
