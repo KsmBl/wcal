@@ -37,7 +37,9 @@ def printMonth(startDay, monthLength, highlight, cursor, header1, header2, color
 			_day = str(day)
 
 			if _day in coloredDays:
-				_day = f"{allColors()[coloredDays[_day]]}{_day}{allColors()[0]}"
+				_day = f"{allColors()[coloredDays[_day]]}{_day.rjust(2)}{allColors()[0]}"
+			else:
+				_day = _day.rjust(2)
 
 			if day == cursor and day in highlight:
 				line += ("{" + _day + "}").rjust(4)
