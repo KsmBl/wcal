@@ -3,10 +3,12 @@ import unittest
 import sys
 import os
 
+sys.dont_write_bytecode = True
 sys.path.append("./lib/")
 
 import readWriteJson as rwj
 import deleteEntry as de
+import syncHandler
 import getConfig
 
 class TestGetConfig(unittest.TestCase):
@@ -14,7 +16,7 @@ class TestGetConfig(unittest.TestCase):
 	@patch('getConfig.os.path.isfile', return_value=False)
 	@patch('getConfig.os.makedirs')
 	@patch('builtins.open', new_callable=mock_open)
-	def test_create_config_file(self, mock_file, mockMakeDirs, mock_isfile):
+	def testCreateConfigFile(self, mock_file, mockMakeDirs, mock_isfile):
 		with patch('getConfig.os.path.join', return_value="/fake/path/config.ini"), \
 			patch('getConfig.os.path.expanduser', side_effect=lambda x: x.replace("~", "/home/testuser")):
 
@@ -29,7 +31,7 @@ class TestGetConfig(unittest.TestCase):
 
 	@patch('getConfig.configparser.ConfigParser')
 	@patch('getConfig.os.path.expanduser', return_value="/home/testuser/.config/wcal/config.ini")
-	def test_get_config(self, mock_expanduser, mockConfig_parser_class):
+	def testGetConfig(self, mock_expanduser, mockConfig_parser_class):
 		mockConfig = MagicMock()
 		mockConfig.__getitem__.return_value = {'someKey': 'someValue'}
 		mockConfig_parser_class.return_value = mockConfig
@@ -45,7 +47,7 @@ class TestGetConfig(unittest.TestCase):
 	@patch('getConfig.configparser.ConfigParser')
 	@patch('getConfig.os.path.expanduser', return_value="/home/testuser/.config/wcal/config.ini")
 	@patch('builtins.open', new_callable=mock_open)
-	def test_set_config(self, mock_file, mock_expanduser, mockConfig_parser_class):
+	def testSetConfig(self, mock_file, mock_expanduser, mockConfig_parser_class):
 		mockConfig = MagicMock()
 		mockConfig.sections.return_value = ["configs"]
 		mockConfig_parser_class.return_value = mockConfig
@@ -63,7 +65,7 @@ class TestGetConfig(unittest.TestCase):
 class TestDeleteEntry(unittest.TestCase):
 
 	@patch('deleteEntry.writeJson')
-	def test_delete_entry_normal(self, mock_writeJson):
+	def testDeleteEntryNormal(self, mock_writeJson):
 		highlights = {
 			"2025-08-06": {
 				"1": "Highlight A",
@@ -82,7 +84,7 @@ class TestDeleteEntry(unittest.TestCase):
 		self.assertIsNone(result)
 
 	@patch('deleteEntry.writeJson')
-	def test_delete_entry_day_empty(self, mock_writeJson):
+	def testDeleteEntryDayEmpty(self, mock_writeJson):
 		highlights = {
 			"2025-08-06": {
 				"1": "Highlight A"
@@ -103,7 +105,7 @@ class TestReadWriteJson(unittest.TestCase):
 	@patch('readWriteJson.os.path.exists', return_value=True)
 	@patch('builtins.open', new_callable=mock_open, read_data='{"key": "value"}')
 	@patch('readWriteJson.json.load', return_value={"key": "value"})
-	def test_read_json_exists(self, mock_json_load, mock_open_file, mock_exists, mock_get_config):
+	def testReadJsonExists(self, mock_json_load, mock_open_file, mock_exists, mock_get_config):
 		result = rwj.readJson("test.json")
 
 		expected_path = os.path.expanduser("~/mock/path/test.json")
@@ -113,14 +115,14 @@ class TestReadWriteJson(unittest.TestCase):
 
 	@patch('readWriteJson.getConfig', return_value="~/mock/path")
 	@patch('readWriteJson.os.path.exists', return_value=False)
-	def test_read_json_not_exists(self, mock_exists, mock_get_config):
+	def testReadJsonNotExists(self, mock_exists, mock_get_config):
 		result = rwj.readJson("nonexistent.json")
 		self.assertIsNone(result)
 
 	@patch('readWriteJson.getConfig', return_value="~/mock/path")
 	@patch('builtins.open', new_callable=mock_open)
 	@patch('readWriteJson.json.dump')
-	def test_write_json(self, mock_json_dump, mock_open_file, mock_get_config):
+	def testWriteJson(self, mock_json_dump, mock_open_file, mock_get_config):
 		data = {"key": "value"}
 
 		rwj.writeJson(data, "output.json")
@@ -129,6 +131,71 @@ class TestReadWriteJson(unittest.TestCase):
 		mock_open_file.assert_called_once_with(expected_path, "w", encoding="utf-8")
 		mock_json_dump.assert_called_once_with(data, mock_open_file(), ensure_ascii=False, indent=2)
 
+
+class TestSyncFiles(unittest.TestCase):
+
+	@patch("syncHandler.getRequest")
+	@patch("syncHandler.getConfig")
+	@patch("syncHandler.log")
+	def testRemoteServerUnreachable(self, mock_log, mock_getConfig, mock_getRequest):
+		mock_getConfig.side_effect = lambda key: {
+			"highlightSaveDirectory": "~/test/highlights",
+			"syncIP": "127.0.0.1",
+			"syncPort": "8000"
+		}[key]
+		mock_getRequest.side_effect = Exception("Connection failed")
+
+		result = syncHandler.syncFiles()
+
+		self.assertEqual(result, [1, "http://127.0.0.1:8000 not reachable"])
+		mock_log.assert_called_with(1, "remote Server 'http://127.0.0.1:8000' not reachable")
+
+	@patch("syncHandler.getRequest")
+	@patch("syncHandler.getConfig")
+	@patch("syncHandler.log")
+	def testEverythingAlreadySynced(self, mock_log, mock_getConfig, mock_getRequest):
+		mock_getConfig.side_effect = lambda key: {
+			"highlightSaveDirectory": "~/test/highlights",
+			"syncIP": "127.0.0.1",
+			"syncPort": "8000"
+		}[key]
+		mock_getRequest.side_effect = [
+			{"status": "pong"},
+			{"hash": "abc123"},
+		]
+
+		with patch("syncHandler.getOwnWholeChecksum", return_value="abc123"):
+			result = syncHandler.syncFiles()
+
+		self.assertEqual(result, [0, "everything synced"])
+		mock_log.assert_called_with(0, "everything synced")
+
+	@patch("syncHandler.uploadFile")
+	@patch("syncHandler.getAllFileNames")
+	@patch("syncHandler.getAllOwnFileNames")
+	@patch("syncHandler.getRequest")
+	@patch("syncHandler.getConfig")
+	@patch("syncHandler.log")
+	def testLocalFilesNeedUpload(self, mock_log, mock_getConfig, mock_getRequest, mock_getOwnFiles, mock_getRemoteFiles, mock_upload):
+		mock_getConfig.side_effect = lambda key: {
+			"highlightSaveDirectory": "~/test/highlights",
+			"syncIP": "127.0.0.1",
+			"syncPort": "8000"
+		}[key]
+
+		mock_getRequest.side_effect = [
+			{"status": "pong"},
+			{"hash": "xyz"},
+		]
+
+		mock_getOwnFiles.return_value = ["file1.json", "file2.json"]
+		mock_getRemoteFiles.return_value = ["file2.json"]
+		mock_upload.return_value = [0, "uploaded"]
+
+		with patch("syncHandler.getOwnWholeChecksum", return_value="abc"):
+			result = syncHandler.syncFiles()
+
+		self.assertEqual(result, [0, "everything synced"])
 
 if __name__ == '__main__':
 	unittest.main()
