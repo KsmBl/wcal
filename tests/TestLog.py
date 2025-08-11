@@ -14,7 +14,7 @@ class TestLogFunction(unittest.TestCase):
 	@patch("log.time.time")
 	@patch("log.os.path.exists")
 	@patch("builtins.open", new_callable=mock_open)
-	def test_log_writes_correct_content(self, mock_file, mock_exists, mock_time, mock_getConfig):
+	def testLogWritesCorrectContent(self, mock_file, mock_exists, mock_time, mock_getConfig):
 		mock_getConfig.return_value = "~/test_log.txt"
 		mock_time.return_value = 1723123456.789  # Mocked timestamp
 		mock_exists.return_value = False  # File doesn't exist
@@ -36,7 +36,7 @@ class TestLogFunction(unittest.TestCase):
 	@patch("log.time.time")
 	@patch("log.os.path.exists")
 	@patch("builtins.open", new_callable=mock_open)
-	def test_log_skips_header_if_exists(self, mock_file, mock_exists, mock_time, mock_getConfig):
+	def testLogSkipsHeaderIfExists(self, mock_file, mock_exists, mock_time, mock_getConfig):
 		mock_getConfig.return_value = "~/test_log.txt"
 		mock_time.return_value = 1234567.89
 		mock_exists.return_value = True  # File exists, so no header
