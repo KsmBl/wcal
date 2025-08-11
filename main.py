@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import datetime
 import sys
 import os
 
@@ -23,7 +24,13 @@ def mainMenu():
 
 	while True:
 		position = 0
-		listItem = chooseList(menus)
+
+		# get current Day as header for chooseList()
+		now = datetime.now()
+		now_formated = now.strftime("%d/%m/%Y")
+		day = now.strftime("%A")
+
+		listItem = chooseList(menus, f" {now_formated} | {day}\n")
 
 		if listItem == None:
 			sys.exit(0)

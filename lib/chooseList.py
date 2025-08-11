@@ -3,13 +3,14 @@ import os
 
 # creates an visual interface with multible options
 # arg: str[]
-def chooseList(inputList):
+def chooseList(inputList, header=""):
 	selectEntry = 0
 	cursor = " * "
 	noCursor = "   "
 
 	while True:
 		os.system("clear")
+		print(header)
 		_index = 0
 		for i in inputList:
 			if _index == selectEntry:
