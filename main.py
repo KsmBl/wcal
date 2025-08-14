@@ -27,7 +27,7 @@ def mainMenu():
 
 		# get current Day as header for chooseList()
 		now = datetime.now()
-		now_formated = now.strftime("%d/%m/%Y")
+		now_formated = now.strftime("%d.%m.%Y")
 		day = now.strftime("%A")
 
 		listItem = chooseList(menus, f" {now_formated} | {day}\n")

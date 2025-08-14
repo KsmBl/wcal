@@ -3,13 +3,13 @@ import sys
 import os
 
 colors = [
-	'\033[0m',	# normal
-	'\033[45m',	# pink
-	'\033[44m',	# dark blue
-	'\033[46m',	# light blue
-	'\033[42m',	# green
-	'\033[43m',	# yellow
-	'\033[41m']	# red
+	'\033[0m',	# 0 normal
+	'\033[45m',	# 1 pink
+	'\033[44m',	# 2 dark blue
+	'\033[46m',	# 3 light blue
+	'\033[42m',	# 4 green
+	'\033[43m',	# 5 yellow
+	'\033[41m']	# 6 red
 
 def allColors():
 	return colors

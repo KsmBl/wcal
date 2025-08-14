@@ -1,3 +1,4 @@
+from getGoogleCalendar import getGoogleHighlights
 from editDayHighlights import editDayHighlights
 from keyboardScanner import keyboardScanner
 from readWriteJson import readJson
@@ -17,17 +18,12 @@ def interactiveMonthViewer(day, month, year, highlightDays):
 	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 	if os.path.exists(f"{SAVE_DIRECTORY}/{year}/{month}.json"):
 		highlightColors = readJson(f"{year}/{month}.json")
-		print(highlightColors)
-		for i in highlightColors:
-			dayColor = []
-			for ii in highlightColors[i]:
-				dayColor.append(highlightColors[i][ii]["color"])
 
-				_countedNumber= Counter(dayColor)
-				_mostUsedColor = max(_countedNumber.values())
-				_mostUsedColors = [nbr for nbr, count in _countedNumber.items() if count == _mostUsedColor]
+		coloredDays = getDayColors(highlightColors)
 
-				coloredDays[i] = max(_mostUsedColors)
+	if getConfig("enableGoogleCal") == "True":
+		googleHighlightDays = getGoogleHighlights()
+	
 
 	while True:
 		os.system('clear')
@@ -58,3 +54,19 @@ def interactiveMonthViewer(day, month, year, highlightDays):
 
 		elif key == "q":
 			return "quit"
+
+
+def getDayColors(highlightColors):
+	coloredDays = {}
+	for i in highlightColors:
+		dayColor = []
+		for ii in highlightColors[i]:
+			dayColor.append(highlightColors[i][ii]["color"])
+
+			_countedNumber= Counter(dayColor)
+			_mostUsedColor = max(_countedNumber.values())
+			_mostUsedColors = [nbr for nbr, count in _countedNumber.items() if count == _mostUsedColor]
+
+			coloredDays[i] = max(_mostUsedColors)
+
+	return coloredDays
