@@ -1,7 +1,5 @@
 from gcsa.google_calendar import GoogleCalendar
-from datetime import datetime, timedelta
 from getConfig import getConfig
-from getColor import allColors
 import calendar
 
 colorConvertion = {
@@ -20,16 +18,11 @@ colorConvertion = {
 }
 
 # get all google calendar entrys for the current month
-def getGoogleHighlights():
+def getGoogleHighlights(startOfMonth, endOfMonth):
 	email = getConfig("googleCalEmail")
 	gc = GoogleCalendar(email)
 
 	highlights = {}
-
-	now = datetime.now()
-	startOfMonth = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-	lastDay = calendar.monthrange(now.year, now.month)[1]
-	endOfMonth = now.replace(day=lastDay, hour=23, minute=59, second=59, microsecond=999999)
 
 	events = gc.get_events(time_min=startOfMonth, time_max=endOfMonth)
 

@@ -1,3 +1,4 @@
+from getGoogleCalendar import getGoogleHighlights
 from getColor import getColor, allColors
 from deleteEntry import deleteEntry
 from askQuestion import askQuestion
@@ -70,6 +71,36 @@ def editEntryMenu(pickedEntry, highlights, day, highlightPath):
 	# remove color code
 	_pickedEntry = re.sub(r'\x1b\[[0-9;]*m', '', pickedEntry)
 
+	# check if entry is from google
+	if entrys[str(_pickedEntry)]["name"].startswith("(G)"):
+		# entry is from google
+		edit = askQuestion("delete Entry in Google:", ["No", "Yes"])
+
+		if edit == 1:
+			# 2025-08-01 00:00:00
+			dayStart = datetime(year, month, day, 0, 0, 0)
+			dayEnd = datetime(year, month, day + 1, 0, 0, 0)
+			googleHighlights = getGoogleHighlights(dayStart, dayEnd)
+			# delete Google Entry
+			print(googleHighlights[str(day)][str(_pickedEntry)])
+
+			import time
+			time.sleep(2)
+		elif edit == 0:
+			return 0
+	else:
+		# entry is not from google
+		edit = askQuestion("edit this Entry:", ["edit", "delete", "return"])
+
+		if edit == 0:
+			editEntry(_pickedEntry, entrys, day, month, year)
+		elif edit == 1:
+			if askQuestion("delete entry?", ["no", "yes"]) == 1:
+				rt = deleteEntry(_pickedEntry, day, month, year)
+				if rt == "reloadDay":
+					return rt
+		elif edit == 2:
+			return 0
 	# index of choosen option
 	edit = askQuestion("edit this Entry:", ["edit", "delete", "return"])
 

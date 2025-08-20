@@ -1,4 +1,5 @@
 from interactiveMonthViewer import interactiveMonthViewer
+from getGoogleCalendar import getGoogleHighlights
 from syncHandler import syncFiles
 from getConfig import getConfig
 from datetime import datetime
@@ -21,13 +22,30 @@ def jumpToDate(day, month, year):
 	else:
 		for i in highlights:
 			highlightDays.append(int(i))
+	allHighlights = {}
 
-	rt = interactiveMonthViewer(day, month, year, highlightDays)
-	if getConfig("syncHighlights") == "True":
-		rt2 = syncFiles()
-		if rt2[0] != 0:
-			print(rt2[1])
-			time.sleep(1)
+	# parse google calendar
+	if getConfig("enableGoogleCal") == "True":
+		start = datetime(year, month, 1, 0, 0, 0, 0)
+		lastDay = calendar.monthrange(year, month)[1]
+		end = datetime(year, month, lastDay, 23, 59, 59, 999999)
+		googleHighlightDays = getGoogleHighlights(start, end)
+
+
+		# combine local and google highlights
+		allHighlights = {**highlights}
+		for _day, times in googleHighlightDays.items():
+			if _day not in allHighlights:
+				allHighlights[_day] = times.copy()
+			else:
+				for time_, details in times.items():
+					allHighlights[_day][time_] = details.copy()
+
+	else:
+		allHighlights = highlights
+
+
+	rt = interactiveMonthViewer(day, month, year, allHighlights)
 
 	if rt == "month - 1":
 		if month <= 1:

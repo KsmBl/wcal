@@ -12,6 +12,8 @@ def settingsMenu():
 			f"syncIP		- {getConfig('syncIP')}",
 			f"syncPort		- {getConfig('syncPort')}",
 			f"loginCode		- {getConfig('loginCode')}",
+			f"enableGoogleCal	- {getConfig('enableGoogleCal')}",
+			f"googleCalEmail	- {getConfig('googleCalEmail')}",
 			f"return"
 		]
 
@@ -34,6 +36,12 @@ def settingsMenu():
 		elif position == 3:
 			rt = getString("Enter new login code\n")
 			setConfig("loginCode", rt)
+		elif position == 4:
+			rt = askQuestion("enable syncing from google calendar??", ["Yes", "No"])
+			setConfig("enableGoogleCal", str([True, False][rt]))
+		elif position == 5:
+			print("NOT WORKING RN")
+			time.sleep(2)
 		elif rt == "return":
 			return
 

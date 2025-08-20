@@ -1,29 +1,30 @@
-from getGoogleCalendar import getGoogleHighlights
-from editDayHighlights import editDayHighlights
+from editDayHighlights import editDayHighlights, newEntry
 from keyboardScanner import keyboardScanner
 from readWriteJson import readJson
 from printMonth import printMonth
 from collections import Counter
+from saveEntry import saveEntry
 from getConfig import getConfig
 import calendar
 import os
 
 # interactive Month viewer where a day can be picked for editing highlights
-def interactiveMonthViewer(day, month, year, highlightDays):
+def interactiveMonthViewer(day, month, year, allHighlights):
+	# set cursor
 	cursorDay = day
+
 	monthStart, monthLength = calendar.monthrange(year, month)
 
-	coloredDays = {}
+	# get array of days with highlights
+	highlightDays = []
+	if allHighlights == None:
+		highlightDays = []
+	else:
+		for i in allHighlights:
+			highlightDays.append(int(i))
 
-	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	if os.path.exists(f"{SAVE_DIRECTORY}/{year}/{month}.json"):
-		highlightColors = readJson(f"{year}/{month}.json")
-
-		coloredDays = getDayColors(highlightColors)
-
-	if getConfig("enableGoogleCal") == "True":
-		googleHighlightDays = getGoogleHighlights()
-	
+	# get dict of days that are colored
+	coloredDays = getDayColors(allHighlights)
 
 	while True:
 		os.system('clear')
