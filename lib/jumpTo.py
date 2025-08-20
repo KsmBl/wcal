@@ -20,8 +20,8 @@ def jumpToDate(day, month, year):
 	if highlights == None:
 		highlightDays = []
 	else:
-		for i in highlights:
-			highlightDays.append(int(i))
+		createMissingPathObjects(year, month)
+		highlights = {}
 	allHighlights = {}
 
 	# parse google calendar
@@ -79,3 +79,14 @@ def jumpToCurrentMonth():
 
 	# show current Date
 	return jumpToDate(currentDay, jumpToCurrentMonth, currentYear)
+def createMissingPathObjects(year, month):
+	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
+
+	# create missing dir
+	if not os.path.exists(os.path.join(SAVE_DIRECTORY, str(year))):
+		os.makedirs(os.path.join(SAVE_DIRECTORY, str(year)))
+	 
+	# create missing file
+	highlightPath = f"{year}/{month}.json"
+	if not os.path.isfile(os.path.join(SAVE_DIRECTORY, highlightPath)):
+		writeJson({}, highlightPath)
