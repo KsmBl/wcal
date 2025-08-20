@@ -4,6 +4,7 @@ from deleteEntry import deleteEntry
 from askQuestion import askQuestion
 from chooseList import chooseList
 from editEntry import editEntry
+from saveEntry import saveEntry
 from getString import getString
 from getConfig import getConfig
 from getTime import getTime
@@ -61,10 +62,15 @@ def editDayHighlights(day, month, year):
 						return "reloadDay"
 
 		else:
-			highlights[str(day)] = {}
-			newEntry(highlights, day, highlightPath)
+			# new Entry was picked
+			if pickedID == len(arrayDayEntries) - 2:
+				newEntry(entrys)
+				saveEntry(entrys, day, month, year)
+				return "reloadDay"
 
-			changedDayVisuality = 1
+			# return was picked
+			elif pickedID == len(arrayDayEntries) - 1:
+				return
 
 
 def editEntryMenu(pickedEntry, highlights, day, highlightPath):

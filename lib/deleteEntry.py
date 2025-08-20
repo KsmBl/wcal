@@ -1,10 +1,10 @@
-from readWriteJson import writeJson
+from readWriteJson import readJson
+from saveEntry import saveEntry
 
-def deleteEntry(pickedEntry, highlights, day, highlightPath):
-	highlights[str(day)].pop(str(pickedEntry))
-	writeJson(highlights, highlightPath)
+def deleteEntry(pickedEntry, day, month, year):
+	entrys = readJson(f"{year}/{month}.json")[str(day)]
+	entrys.pop(str(pickedEntry))
+	entrys = {k: v for k, v in entrys.items() if not v["name"].startswith("(G)")}
 
-	if highlights[str(day)] == {}:
-		highlights.pop(str(day))
-		writeJson(highlights, highlightPath)
-		return "reloadDay"
+	saveEntry(entrys, day, month, year)
+	return "reloadDay"

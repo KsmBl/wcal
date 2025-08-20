@@ -49,9 +49,15 @@ def interactiveMonthViewer(day, month, year, allHighlights):
 			cursorDay = min(cursorDay + 7, monthLength)
 
 		elif key == "enter":
-			rt = editDayHighlights(cursorDay, month, year)
-			if rt == "reloadDay":
-				return rt
+			if not str(cursorDay) in allHighlights:
+				entry = {}
+				newEntry(entry)
+				saveEntry(entry, cursorDay, month, year)
+				return "reloadDay"
+			else:
+				rt = editDayHighlights(cursorDay, month, year, allHighlights[str(cursorDay)])
+				if rt == "reloadDay":
+					return rt
 
 		elif key == "q":
 			return "quit"
