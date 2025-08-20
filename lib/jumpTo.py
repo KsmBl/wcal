@@ -8,20 +8,20 @@ import calendar
 
 import time
 
-SAVE_DIRECTORY = "./savedData"
-
 # jump to a specific date
 # arg: int, int, int
 def jumpToDate(day, month, year):
 	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
-	highlights = readJson(f"{year}/{month}.json")
-	highlightDays = []
 
-	if highlights == None:
-		highlightDays = []
+	# parse local saved highlights
+	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
+	if os.path.exists(f"{SAVE_DIRECTORY}/{year}/{month}.json"):
+		highlights = readJson(f"{year}/{month}.json")
+	
 	else:
 		createMissingPathObjects(year, month)
 		highlights = {}
+
 	allHighlights = {}
 
 	# parse google calendar
@@ -68,7 +68,19 @@ def jumpToDate(day, month, year):
 	elif rt == "reloadDay":
 		return jumpToDate(day, month, year)
 
-	return rt
+	elif rt == "quit":
+		return "quit"
+
+	elif rt[0] == "changedEntrys":
+		# return whole day with changed, removed or new entrys
+		jumpToDate(rt[2], month, year)
+
+	if getConfig("syncHighlights") == "True":
+		rt2 = syncFiles()
+		if rt2[0] != 0:
+			print(rt2[1])
+			time.sleep(1)
+
 
 # use jumpToDate() to jump to the current month and day
 def jumpToCurrentMonth():
@@ -79,6 +91,7 @@ def jumpToCurrentMonth():
 
 	# show current Date
 	return jumpToDate(currentDay, jumpToCurrentMonth, currentYear)
+
 def createMissingPathObjects(year, month):
 	SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 

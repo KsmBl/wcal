@@ -1,15 +1,12 @@
-from readWriteJson import writeJson
 from getString import getString
+from saveEntry import saveEntry
 from getColor import getColor
-from getTime import getTime
 
-import time
-
-def editEntry(pickedEntry, highlights, day, highlightPath):
+def editEntry(pickedEntry, entrys, day, month, year):
 	_name = getString("Enter new entry name\n")
 	_color = getColor()
 
-	highlights[str(day)][pickedEntry]["name"] = _name
-	highlights[str(day)][pickedEntry]["color"] = _color
+	entrys[pickedEntry]["name"] = _name
+	entrys[pickedEntry]["color"] = _color
 
-	writeJson(highlights, highlightPath)
+	saveEntry(entrys, day, month, year)

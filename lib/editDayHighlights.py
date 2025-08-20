@@ -7,59 +7,41 @@ from editEntry import editEntry
 from saveEntry import saveEntry
 from getString import getString
 from getConfig import getConfig
+from datetime import datetime
 from getTime import getTime
 from readWriteJson import *
 import re
 
-import time
-
 # creates an visual interface for editing highlighted days in a calender
 # arg: int, int, int
-def editDayHighlights(day, month, year):
+def editDayHighlights(day, month, year, entrys):
 	changedDayVisuality = 0
 
 	while True:
-		SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
+		# create missing files or dirs
 		highlightPath = f"{year}/{month}.json"
-
+		SAVE_DIRECTORY = os.path.expanduser(getConfig("highlightSaveDirectory"))
 		createMissingPathObjects(SAVE_DIRECTORY, year, highlightPath)
 
-		highlights = readJson(highlightPath)
-		dayEntries = []
+		# show entrys as array with + and return button
+		arrayDayEntries = [f"{allColors()[info['color']]}{_time} | {info['name']}{allColors()[0]}" for _time, info in entrys.items()]
+		arrayDayEntries.append("new Entry +")
+		arrayDayEntries.append("return")
 
-		if str(day) in highlights:
-			dayEntries = highlights[str(day)]
-			arrayDayEntries = [f"{allColors()[info['color']]}{time} | {info['name']}{allColors()[0]}" for time, info in dayEntries.items()]
+		# select one of the entrys in a list
+		pickedEntry = chooseList(arrayDayEntries)
 
-			arrayDayEntries.append("new Entry +")
-			arrayDayEntries.append("return")
+		if pickedEntry == None:
+			return
 
-			pickedEntry = chooseList(arrayDayEntries)
-			if pickedEntry == None:
-				if changedDayVisuality == 0:
-					return None
-				else:
-					return "reloadDay"
+		pickedID = arrayDayEntries.index(pickedEntry)
+		pickedEntry = pickedEntry.split(" ")[0]
 
-			pickedID = arrayDayEntries.index(pickedEntry)
-			pickedEntry = pickedEntry.split(" ")[0]
-
-			if pickedID <= len(arrayDayEntries) - 3:
-
-				editEntryMenu(pickedEntry, highlights, day, highlightPath)
-
-			else:
-				# new Entry
-				if pickedID == len(arrayDayEntries) - 2:
-					if newEntry(highlights, day, highlightPath) == "reloadDay":
-						return "reloadDay"
-
-				# return
-				elif pickedID == len(arrayDayEntries) - 1:
-					if changedDayVisuality == 0:
-						return None
-					else:
-						return "reloadDay"
+		if pickedID <= len(arrayDayEntries) - 3:
+			# an entry was picked
+			rt = editEntryMenu(pickedEntry, entrys, day, month, year)
+			if rt == "reloadDay":
+				return rt
 
 		else:
 			# new Entry was picked
@@ -73,7 +55,7 @@ def editDayHighlights(day, month, year):
 				return
 
 
-def editEntryMenu(pickedEntry, highlights, day, highlightPath):
+def editEntryMenu(pickedEntry, entrys, day, month, year):
 	# remove color code
 	_pickedEntry = re.sub(r'\x1b\[[0-9;]*m', '', pickedEntry)
 
@@ -107,25 +89,14 @@ def editEntryMenu(pickedEntry, highlights, day, highlightPath):
 					return rt
 		elif edit == 2:
 			return 0
-	# index of choosen option
-	edit = askQuestion("edit this Entry:", ["edit", "delete", "return"])
-
-	if edit == 0:
-		editEntry(_pickedEntry, highlights, day, highlightPath)
-	elif edit == 1:
-		if askQuestion("delete entry?", ["no", "yes"]) == 1:
-			if deleteEntry(_pickedEntry, highlights, day, highlightPath) == "reloadDay":
-				return "reloadDay"
 
 
-def newEntry(highlights, day, highlightPath):
+def newEntry(entrys):
 	_hour, _minute, _name, _color = getEntryData()
-	highlights[str(day)].setdefault(f"{_hour}:{_minute}", {})
+	entrys.setdefault(f"{_hour}:{_minute}", {})
 
-	highlights[str(day)][f"{_hour}:{_minute}"]["name"] = _name
-	highlights[str(day)][f"{_hour}:{_minute}"]["color"] = _color
-
-	writeJson(highlights, highlightPath)
+	entrys[f"{_hour}:{_minute}"]["name"] = _name
+	entrys[f"{_hour}:{_minute}"]["color"] = _color
 
 
 def getEntryData():
