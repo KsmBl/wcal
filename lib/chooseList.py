@@ -2,7 +2,7 @@ from keyboardScanner import keyboardScanner
 import os
 
 # creates an visual interface with multible options
-# arg: str[]
+# args: str[], str (optional)
 def chooseList(inputList, header=""):
 	selectEntry = 0
 	cursor = " * "
