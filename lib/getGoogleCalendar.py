@@ -43,7 +43,8 @@ def getGoogleHighlights(startOfMonth, endOfMonth):
 
 		highlights[day_str][time_str] = {
 			"name": f"(G) {name}",
-			"color": color
+			"color": color,
+			"eventId": event.event_id
 		}
 
 	return highlights

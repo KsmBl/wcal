@@ -1,4 +1,5 @@
 from getGoogleCalendar import getGoogleHighlights
+from deleteGoogleEntry import deleteGoogleEntry
 from getColor import getColor, allColors
 from deleteEntry import deleteEntry
 from askQuestion import askQuestion
@@ -69,11 +70,11 @@ def editEntryMenu(pickedEntry, entrys, day, month, year):
 			dayStart = datetime(year, month, day, 0, 0, 0)
 			dayEnd = datetime(year, month, day + 1, 0, 0, 0)
 			googleHighlights = getGoogleHighlights(dayStart, dayEnd)
-			# delete Google Entry
-			print(googleHighlights[str(day)][str(_pickedEntry)])
 
-			import time
-			time.sleep(2)
+			# delete Google Entry
+			googleEntryId = googleHighlights[str(day)][str(_pickedEntry)]["eventId"]
+			deleteGoogleEntry(googleEntryId)
+			return "reloadDay"
 		elif edit == 0:
 			return 0
 	else:
